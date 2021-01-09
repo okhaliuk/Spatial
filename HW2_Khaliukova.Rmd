@@ -1,0 +1,226 @@
+---
+title: "HW2"
+author: "Khaliukova"
+date: "9/1/2020"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Q1 Consider a linear model for data as $y = X \beta + e$
+where y is an vector of length n and X is a full rank, n×p matrix. 
+The OLS estimate of $\beta$ is given by $\hat{\beta} = (X^T X)^{−1} X^T y$.
+
+(a) Let $P =X(X^T X)^{−1} X^T$ then $X \hat{\beta}=P y$. Show that $P^2=P$ that is P
+is a projection matrix.
+
+$P^2=(X(X^TX)^{−1}X^T)(X(X^TX)^{−1}X^T)=X(X^TX)^{-1}(X^TX)(X^TX)^{-1}X^T=X(X^TX)^{-1}X^T=P$.
+Hence P is a projection matrix.
+
+
+(b) Show that P is symmetric and non-negative definite.
+
+To show that P is symmetric show that $P^T=P$.
+
+We know that $(X^T)^{-1}=(X^{-1})^T$ and $(X^T)^T=X$. 
+Thus, $(X^TX)^{-1}$ is symmetric =>
+
+$((X^TX)^{-1})^T=((X^TX)T)^{-1}=(X^TX)^{-1}$ then
+
+$P^T=(X(X^TX)^{−1}X^T)^T=X((X^TX)^{-1})^TX^T=P$.
+Hence P is symmetric. 
+
+To show that P is non-negative definite (positive semi-definite) show that 
+$a^T\Sigma a\geq 0$ for all $a\in R^n$   
+
+Note X has full rank
+$a^T\Sigma a=a^T(XX^T)a=(a^TX)(X^Ta)=(X^Ta)^T(X^Ta)$, let $w=(X^Ta)$ then
+$w^Tw=\sum_{k = 1}^{n}w_k^{2} \geq 0$. Hence P is non-negative definite matrix.  
+
+
+(c) Show that the trace of P is p, the number of columns in X. (One way to show this is to use properties of the trace see A.1.5 in the textbook notes.)
+
+Using the fact that trace operator is invariant under cyclic permutations, that is $tr(ABC)=tr(CAB)$. Note that identity matrix $I$ is $p \times p$ matrix. 
+
+$tr(P)=tr(X(X^T X)^{−1} X^T)=tr((X^T X)^{−1} X^TX)=tr(I)=p$ 
+
+
+
+
+Q2  For the linear model $y = X \beta + e$ assume that the error vector has mean zero, is uncorrelated, and has a constant variance, $\sigma^2$. I.e. $COV (e, e) = \sigma^2I$ for some $\sigma > 0$ and $I$ the identity matrix. In this problem you should also assume that $X$ is a fixed and known $n \times p$ matrix. and as usual let $\hat{\beta}$ be the OLS estimate for $\beta$.
+
+(a) Using the rules of linear statistics and covariances show that 
+$COV (\hat{\beta},\hat{\beta})$ is $\sigma^2(X^TX)^{−1}$.
+
+$COV (\hat{\beta},\hat{\beta})=VAR((X^TX)^{-1}X^TY)=(X^TX)^{-1}X^TVar(Y)X(X^TX)^{-1}=\sigma^2(X^TX)^{-1}X^TIX(X^TX)^{-1}=\sigma^2(X^TX)^{-1}$
+
+
+(b) Let $\hat{y} = X \hat{\beta}$ find $E(\hat{y})$ and $Cov( \hat{y}, \hat{y} )$
+
+$E(\hat{y}) =E(X \hat{\beta})=X\beta$ because $E(X)=X$ and $E(\hat{\beta})=\beta$.
+
+$Cov( \hat{y}, \hat{y} )=cov(X \hat{\beta})=XCov({\beta})X^T=\sigma^2X(X^TX)^{-1}X^T$
+
+
+(c) Let $a$ be a vector of length $p$. Find $VAR(a^T \hat{\beta} )$ in terms of $X$, $a$, and $\sigma$. 
+
+$VAR(a^T \hat{\beta})=a^TCov(\hat{\beta})a=a^T\sigma^2(X^TX)^{-1}a$, $Cov(\hat{\beta})$ as proven in part (a).   
+
+
+
+
+Q3. Let $X= [ x_1,  x_2]$ that is $X$ is $n \times  2$ made up of two variables and assume the linear model,   $y = X \beta + e$. Consider the following algorithm known as backfitting. 
+Initialize $\hat{\beta}_2^0 = 0$
+
+Step 1 Regress $(y - x_2\hat{\beta}_2^{k-1})$ 
+on just $x_1$ to get $\hat{\beta}_1^{k}$
+
+Step 2  Regress $(y-x_1\hat{\beta}_1^{k})$ on just $x_2$  to get $\hat{\beta}_2^k$
+
+Repeat Steps 1 and 2 until  $\hat{ \beta}^{k}$  converges, sometimes this is notated as  $\hat{ \beta}^{\infty}$. (Or practically speaking the parameter estimates do not change within a small tolerance from one interation to the next). 
+
+This is called backfitting because after Step 2 to estimate $\beta_2$ one goes back and refits to update the estimate of $\beta_1$.
+Note that at every step one is applying single variable OLS to the residuals from  fitting the other variable. 
+
+Show that if the backfitting algorithm converges then the parameter estimates converge to the full estimate found by OLS applied to the two variables at once (I.e. the usual estimate listed in problem 1.)
+
+The full estimate found by OLS applied to the two variables at once. The normal equations. 
+
+
+$$ 
+\left[\begin{array}{cc} 
+x_1^Tx_1 & x_1^Tx_2\\
+x_2^Tx_1 & x_2^Tx_1
+\end{array}\right]
+\left[\begin{array}{cc} 
+\hat{ \beta}_1 \\ 
+\hat{ \beta}_2 
+\end{array}\right]=
+\left[\begin{array}{cc} 
+x_1^Ty \\ 
+x_2^Ty
+\end{array}\right]=
+\left[\begin{array}{cc} 
+x_1^Tx_1 \hat{ \beta}_1 + x_1^Tx_2 \hat{ \beta}_2= x_1^Ty\\
+x_2^Tx_1 \hat{ \beta}_1 + x_2^Tx_1 \hat{ \beta}_2= x_2^Ty
+\end{array}\right]
+$$ 
+
+Step 1 
+Assuming $\hat{\beta}_2^{k-1}$ and $\hat{ \beta}^{k}$ converge to $\hat{\beta}_1^\infty$ and $\hat{\beta}_2^\infty$
+
+$\hat{\beta}_1^\infty= (x_1^T r)(x_1^T x_1)^{-1}= x_1^T (y - x_2\hat{\beta}_2^\infty)(x_1^T x_1)^{-1}$
+
+multiply by $(x_1^T x_1)$ then
+
+$\hat{\beta}_1^\infty x_1^T x_1 = x_1^T (y - x_2\hat{\beta}_2^\infty)$
+
+$\hat{\beta}_1^\infty x_1^T x_1 = x_1^T y - x_1^T x_2\hat{\beta}_2^\infty)$
+
+$\hat{\beta}_1^\infty x_1^T x_1 + x_1^T x_2\hat{\beta}_2^\infty = x_1^T y$
+
+Step 2 
+
+$\hat{\beta}_2^\infty= (x_2^T r)(x_2^T x_2)^{-1}= x_2^T (y - x_1\hat{\beta}_1^\infty)(x_2^T x_2)^{-1}$
+
+multiply by $(x_2^T x_2)$ then
+
+$\hat{\beta}_2^\infty x_2^T x_2 = x_2^T (y - x_1\hat{\beta}_1^\infty)$
+
+$\hat{\beta}_2^\infty x_2^T x_2 = x_2^T y - x_2^T x_1\hat{\beta}_1^\infty)$
+
+$\hat{\beta}_2^\infty x_2^T x_2 + x_2^T x_1\hat{\beta}_1^\infty = x_1^T y$
+
+so 
+
+$\hat{\beta}_1^\infty x_1^T x_1 + x_1^T x_2\hat{\beta}_2^\infty = x_1^T y$
+
+$\hat{\beta}_2^\infty x_2^T x_2 + x_2^T x_1\hat{\beta}_1^\infty = x_1^T y$
+
+is teh same as the Normal equations hence we proved that when the backfitting 
+algorithm converges then the parameter estimates converge to the full estimate 
+found by OLS applied to the two variables at once.   
+
+
+Q4. In R  redo the regression from the lapse rate script that includes both elevation and latitude using the $lm$ function.  Now use the $summary$ function to list the table of OLS estimates and their standard errors.  If $obj$ is the fit object from $lm$ then this can be done by 
+
+```{r} 
+library(fields)
+
+data(COmonthlyMet)
+
+##
+## Data Setup up 
+##
+
+temp <- CO.tmax.MAM.climate
+elev <- CO.elev
+grd <- as.matrix(CO.loc)
+thesekeep <- !is.na(temp)
+temp <- temp[thesekeep]
+elev <- elev[thesekeep]
+grd <- grd[thesekeep,]
+
+temp <- temp[order(elev)]
+grd <- grd[order(elev),]
+elev <- elev[order(elev)]
+
+elev <- elev/1000 # x originally in meters, convert to km above sea level
+
+n <- length(temp) # sample size
+
+#model output
+model <- lm(temp~elev + grd[,2])
+Q4 <- summary(model)
+Q4$coefficients
+
+```
+
+(a)  Using  linear algebra and related operations compute the standard errors (second column)  "by hand"  for the estimated parameters. That is, find these without having to rely on the $lm$ output. 
+
+```{r}
+
+X<- cbind(1, elev, grd[,2])
+
+# t(X) is the transponse, %*% is matrix multiplication, solve takes the inverse
+betaHat <- solve(t(X) %*% X) %*% t(X) %*% temp
+print(betaHat)
+
+resid<- temp - X%*%betaHat
+
+# estimate error variance 
+errorVariance <-  c( t(resid)%*%resid/(n-3) )
+errorVariance
+
+#covariance of beta hat.  
+cov_betaHat <- errorVariance*solve( t(X) %*% X  )
+print(cov_betaHat)
+
+se <- sqrt( diag(cov_betaHat))
+se
+
+```
+
+(b) Using your formula in 2 b). Substitute  $\widehat{\sigma ^2}$ for $\sigma^2$ in this formula,  find the diagonal elements of this covariance matrix of $X\hat{\beta}$ and make a histogram of these variances. For what values of latitude and elevation do these  variances tend to be large? (You might want  to use $quilt.plot$ to help visualize this.)
+
+```{r}
+
+Cov_yHat <- X%*%cov_betaHat%*%t(X)
+Var_yHat <-diag(Cov_yHat)
+hist(Var_yHat)
+
+
+quilt.plot(grd,Var_yHat,main="Variances",
+           nx=30, ny=30)
+US( add=TRUE)
+contour( CO.elevGrid, col="grey",
+         levels= c( 1000, 1500, 2000), add=TRUE)
+
+```
+
+
+According to the displayed map the variances tend to be larger for latitude between 39 and 40, and longitude between 105 and 107.    
